@@ -19,13 +19,14 @@ class TodoClient {
         return body ?: ""
     }
 
-    fun createNewTodo(todo: Todo) {
+    fun createNewTodo(todo: Todo): Int {
         val body = todo.toString().toRequestBody("application/json".toMediaType())
         val request = Request.Builder()
             .url("http://localhost:8080/todos")
             .post(body)
             .build()
         val response = client.newCall(request).execute()
-        println("POST: " + response.body?.string())
+        println("POST: " + response.code)
+        return response.code
     }
 }

@@ -1,0 +1,1 @@
+docker rm $(docker stop $(docker ps -a -q --filter ancestor=todo-app --format="{{.ID}}"))
