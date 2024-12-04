@@ -8,7 +8,7 @@ class Docker {
     fun start() {
         val pb = ProcessBuilder("../start-docker.sh")
         dockerProcess = pb.start()
-        sleep(500)
+        sleep(3000)
     }
 
     fun stop() {
