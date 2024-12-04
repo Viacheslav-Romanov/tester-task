@@ -26,7 +26,7 @@ class TodoTest {
 
         todoClient.getAllTodos()
         val responseCode = todoClient.createNewTodo(Todo(3, "Test Todo", false))
-        val todos =todoClient.getAllTodos()
+        val todos = todoClient.getAllTodos()
 
         assertEquals(201, responseCode)
         assertEquals("""[{"id":3,"text":"Test Todo","completed":false}]""", todos)

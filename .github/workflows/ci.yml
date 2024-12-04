@@ -1,0 +1,45 @@
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      RUN_IN_PIPELINE: true
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'oracle'
+        java-version: '21'
+
+    - name: Grant execute permissions
+      run: chmod +x gradlew start-docker.sh stop-docker.sh
+
+    - name: Start docker
+      run: |
+        docker load < todo-app.tar
+        docker run -p 8080:4242 -d todo-app
+
+    - name: Run tests
+      run: ./gradlew test
+
+    - name: Stop docker
+      if: always()
+      run: docker rm $(docker stop $(docker ps -a -q --filter ancestor=todo-app --format="{{.ID}}"))
+
+    - name: Upload Test Report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Test report
+        path: app/build/reports/tests/jvmTest
