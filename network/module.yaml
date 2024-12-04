@@ -1,0 +1,7 @@
+product:
+  type: lib
+  platforms: [jvm]
+
+dependencies:
+  - com.squareup.okhttp3:okhttp:4.12.0: exported
+  - ../model

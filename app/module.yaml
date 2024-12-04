@@ -1,0 +1,11 @@
+product: jvm/app
+
+test-dependencies:
+  - ../network
+  - ../model
+
+settings:
+  kotlin:
+    languageVersion: 2.0
+  jvm:
+    release: 21

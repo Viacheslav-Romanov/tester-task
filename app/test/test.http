@@ -1,0 +1,66 @@
+### Get all todos
+GET http://localhost:8080/todos
+
+### Get todos with pagination
+GET http://localhost:8080/todos?offset=0&limit=5
+
+### Create new todo
+POST http://localhost:8080/todos
+Content-Type: application/json
+
+{
+    "id": 2,
+    "text": "Buy groceries",
+    "completed": false
+}
+
+### Create another todo
+POST http://localhost:8080/todos
+Content-Type: application/json
+
+{
+    "id": 3,
+    "text": "Walk the dog",
+    "completed": true
+}
+
+### Update todo
+PUT http://localhost:8080/todos/1
+Content-Type: application/json
+
+{
+    "id": 1,
+    "text": "Buy groceries and milk",
+    "completed": true
+}
+
+### Delete todo (with Basic Auth)
+DELETE http://localhost:8080/todos/1
+Authorization: Basic admin:admin
+
+### Invalid delete request (without auth)
+DELETE http://localhost:8080/todos/1
+
+### Get todos with invalid pagination
+GET http://localhost:8080/todos?offset=-1&limit=0
+
+### Create todo with invalid data
+POST http://localhost:8080/todos
+Content-Type: application/json
+
+{
+    "id": "invalid",
+    "text": "",
+    "completed": "not-a-boolean"
+}
+
+### Update non-existent todo
+PUT http://localhost:8080/todos/999
+Content-Type: application/json
+
+{
+    "id": 999,
+    "text": "This todo doesn't exist",
+    "completed": false
+}
+

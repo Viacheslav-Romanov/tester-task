@@ -1,0 +1,27 @@
+# Ignore compiled output
+dist/
+build/
+
+# Ignore logs
+*.log
+logs/
+*.tmp
+
+# Ignore environment variable files
+.env
+.env.local
+
+# Ignore system files
+.DS_Store
+
+# Ignore IDE specific files
+.idea/
+.vscode/
+.kotlin/
+.gradle/
+
+# Ignore coverage reports
+coverage/
+
+# Ignore temporary files
+*.swp
