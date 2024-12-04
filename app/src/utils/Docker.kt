@@ -3,18 +3,19 @@ package utils
 import java.lang.Thread.sleep
 
 class Docker {
-    private var dockerProcess: Process? = null
+    private var dockerProcessStart: Process? = null
 
     fun start() {
         val pb = ProcessBuilder("../start-docker.sh")
-        dockerProcess = pb.start()
+        dockerProcessStart = pb.start()
         sleep(3000)
     }
 
     fun stop() {
         val pb = ProcessBuilder("../stop-docker.sh")
-        pb.start()
-        dockerProcess?.waitFor()
-        dockerProcess?.destroy()
+        val dockerProcessStop = pb.start()
+        dockerProcessStop?.waitFor()
+        dockerProcessStart?.waitFor()
+        dockerProcessStart?.destroy()
     }
 }
