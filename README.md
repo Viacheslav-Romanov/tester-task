@@ -1,3 +1,5 @@
+[![Tester Task CI](https://github.com/Viacheslav-Romanov/tester-task/actions/workflows/ci.yml/badge.svg)](https://github.com/Viacheslav-Romanov/tester-task/actions/workflows/ci.yml)
+
 Key points to check in test task:
 
 - README file presence
