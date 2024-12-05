@@ -7,10 +7,6 @@ build/
 logs/
 *.tmp
 
-# Ignore environment variable files
-.env
-.env.local
-
 # Ignore system files
 .DS_Store
 

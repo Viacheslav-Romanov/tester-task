@@ -4,4 +4,5 @@ product:
 
 dependencies:
   - com.squareup.okhttp3:okhttp:4.12.0: exported
+  - io.github.cdimascio:dotenv-kotlin:6.4.2
   - ../model

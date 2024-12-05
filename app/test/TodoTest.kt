@@ -66,7 +66,7 @@ class TodoTest: BaseTest() {
         val todos = todoClient.getAllTodos()
 
         assertEquals(204, responseCode)
-        assertEquals("""[]""", todos)
+        assertEquals("[]", todos)
     }
 
     @Test

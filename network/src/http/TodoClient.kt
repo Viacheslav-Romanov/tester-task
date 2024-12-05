@@ -1,6 +1,7 @@
 package http
 
 import Todo
+import io.github.cdimascio.dotenv.dotenv
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -8,10 +9,11 @@ import okhttp3.RequestBody.Companion.toRequestBody
 
 class TodoClient {
     private val client = OkHttpClient()
+    private val baseUrl: String = "http://${dotenv()["BASE_URL"]}/todos"
 
     fun getAllTodos(): String {
         val request = Request.Builder()
-            .url("http://localhost:8080/todos")
+            .url(baseUrl)
             .build()
         val response = client.newCall(request).execute()
         val body = response.body?.string()
@@ -21,7 +23,7 @@ class TodoClient {
 
     fun getNTodos(offset: Int, limit: Int): String {
         val request = Request.Builder()
-            .url("http://localhost:8080/todos?offset=$offset&limit=$limit")
+            .url("$baseUrl?offset=$offset&limit=$limit")
             .build()
         val response = client.newCall(request).execute()
         val body = response.body?.string()
@@ -32,7 +34,7 @@ class TodoClient {
     fun createTodo(todo: Todo): Int {
         val body = todo.toString().toRequestBody("application/json".toMediaType())
         val request = Request.Builder()
-            .url("http://localhost:8080/todos")
+            .url(baseUrl)
             .post(body)
             .build()
         val response = client.newCall(request).execute()
@@ -43,7 +45,7 @@ class TodoClient {
     fun createTodo(todo: String): Int {
         val body = todo.toRequestBody("application/json".toMediaType())
         val request = Request.Builder()
-            .url("http://localhost:8080/todos")
+            .url(baseUrl)
             .post(body)
             .build()
         val response = client.newCall(request).execute()
@@ -56,7 +58,7 @@ class TodoClient {
             val todo: Todo = Todo(i, "Test Todo #$i", i%2 == 0)
             val body = todo.toString().toRequestBody("application/json".toMediaType())
             val request = Request.Builder()
-                .url("http://localhost:8080/todos")
+                .url(baseUrl)
                 .post(body)
                 .build()
             val response = client.newCall(request).execute()
@@ -67,7 +69,7 @@ class TodoClient {
     fun updateTodo(todo: Todo): Int {
         val body = todo.toString().toRequestBody("application/json".toMediaType())
         val request = Request.Builder()
-            .url("http://localhost:8080/todos/${todo.id}")
+            .url("$baseUrl/${todo.id}")
             .put(body)
             .build()
         val response = client.newCall(request).execute()
@@ -77,7 +79,7 @@ class TodoClient {
 
     fun deleteTodo(todo: Todo, withAuth: Boolean = true): Int {
         val request = Request.Builder()
-            .url("http://localhost:8080/todos/${todo.id}")
+            .url("$baseUrl/${todo.id}")
             .apply {
                 if (withAuth)
                     addHeader("Authorization", "Basic YWRtaW46YWRtaW4=")
