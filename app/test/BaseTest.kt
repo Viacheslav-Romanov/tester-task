@@ -1,6 +1,6 @@
 import http.TodoClient
-import org.junit.After
-import org.junit.Before
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import utils.Docker
 import ws.WebSocketClient
 
@@ -8,13 +8,13 @@ open class BaseTest {
     val todoClient = TodoClient()
     private val docker = Docker()
 
-    @Before
+    @BeforeEach
     fun setup() {
         docker.start()
         WebSocketClient.start()
     }
 
-    @After
+    @AfterEach
     fun teardown() {
         docker.stop()
     }

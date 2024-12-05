@@ -1,6 +1,6 @@
-import org.junit.Assert.assertEquals
-import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import ws.WebSocketClient
 
 class EdgeCasesTest: BaseTest() {
@@ -25,7 +25,7 @@ class EdgeCasesTest: BaseTest() {
     }
 
     @Test
-    @Ignore("Supposed to return 400 but returns 401. Might be a bug.")
+    @Disabled("Supposed to return 400 but returns 401. Might be a bug.")
     fun `Given todos when update with invalid data then check it's failed`() {
         todoClient.createTodo(Todo(1, "Test Todo", false))
         val invalidTodo = """{"id":1,"text":"","completed":"invalid"}"""

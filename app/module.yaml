@@ -5,6 +5,7 @@ test-dependencies:
   - ../model
 
 settings:
+  junit: junit-5
   kotlin:
     languageVersion: 2.0
   jvm:
