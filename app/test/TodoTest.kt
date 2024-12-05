@@ -1,31 +1,10 @@
-import http.TodoClient
-import org.junit.After
-import org.junit.Before
 import org.junit.Test
-import utils.Docker
-import ws.WebSocketClient
 import kotlin.test.assertEquals
 
-class TodoTest {
-    private val todoClient = TodoClient()
-    private val docker = Docker()
-
-    @Before
-    fun setup() {
-        docker.start()
-    }
-
-    @After
-    fun teardown() {
-        docker.stop()
-    }
-
+class TodoTest: BaseTest() {
     @Test
     fun `Given zero todos when create todo then check it's added`() {
-        WebSocketClient.start()
-
-        todoClient.getAllTodos()
-        val responseCode = todoClient.createNewTodo(Todo(3, "Test Todo", false))
+        val responseCode = todoClient.createTodo(Todo(3, "Test Todo", false))
         val todos = todoClient.getAllTodos()
 
         assertEquals(201, responseCode)
@@ -34,12 +13,9 @@ class TodoTest {
 
     @Test
     fun `Given 3 todos when get all then check 3 returned`() {
-        WebSocketClient.start()
-
-        todoClient.getAllTodos()
-        todoClient.createNewTodo(Todo(1, "Test Todo 1", false))
-        todoClient.createNewTodo(Todo(2, "Test Todo 2", false))
-        todoClient.createNewTodo(Todo(3, "Test Todo 3", true))
+        todoClient.createTodo(Todo(1, "Test Todo 1", false))
+        todoClient.createTodo(Todo(2, "Test Todo 2", false))
+        todoClient.createTodo(Todo(3, "Test Todo 3", true))
         val todos = todoClient.getAllTodos()
 
         val expected = """
@@ -49,11 +25,32 @@ class TodoTest {
     }
 
     @Test
-    fun `Given one todo when update todo then check it's updated`() {
-        WebSocketClient.start()
+    fun `Given 5 todos when get with limit 3 and offset 0 then first 3 returned`() {
+        todoClient.createNTodos(5)
+        val todos = todoClient.getNTodos(0, 3)
 
-        todoClient.getAllTodos()
-        todoClient.createNewTodo(Todo(1, "Test Todo", false))
+        val expected = """
+        [{"id":1,"text":"Test Todo #1","completed":false},{"id":2,"text":"Test Todo #2","completed":true},{"id":3,"text":"Test Todo #3","completed":false}]
+        """.trim()
+
+        assertEquals(expected, todos)
+    }
+
+    @Test
+    fun `Given 5 todos when get with limit 3 and offset 2 then last 3 returned`() {
+        todoClient.createNTodos(5)
+        val todos = todoClient.getNTodos(2, 3)
+
+        val expected = """
+        [{"id":3,"text":"Test Todo #3","completed":false},{"id":4,"text":"Test Todo #4","completed":true},{"id":5,"text":"Test Todo #5","completed":false}]
+        """.trim()
+
+        assertEquals(expected, todos)
+    }
+
+    @Test
+    fun `Given one todo when update todo then check it's updated`() {
+        todoClient.createTodo(Todo(1, "Test Todo", false))
         val responseCode = todoClient.updateTodo(Todo(1, "Buy groceries and milk", true))
         val todos = todoClient.getAllTodos()
 
@@ -63,11 +60,8 @@ class TodoTest {
 
     @Test
     fun `Given one todo when delete todo then check no todos`() {
-        WebSocketClient.start()
-
-        todoClient.getAllTodos()
         val todo = Todo(1, "Test Todo", false)
-        todoClient.createNewTodo(todo)
+        todoClient.createTodo(todo)
         val responseCode = todoClient.deleteTodo(todo)
         val todos = todoClient.getAllTodos()
 
@@ -75,4 +69,45 @@ class TodoTest {
         assertEquals("""[]""", todos)
     }
 
+    @Test
+    fun `Given one todo when delete without auth then unauthorized`() {
+        val todo = Todo(1, "Test Todo", false)
+        todoClient.createTodo(todo)
+        val responseCode = todoClient.deleteTodo(todo, false)
+        val todos = todoClient.getAllTodos()
+
+        assertEquals(401, responseCode)
+        assertEquals("""[{"id":1,"text":"Test Todo","completed":false}]""", todos)
+    }
+
+    @Test
+    fun `Given zero todos when create an invalid todo then check it's failed`() {
+        val invalidTodo = """
+        {
+            "id": "invalid",
+            "text": "",
+            "completed": "not-a-boolean"
+        }
+        """.trimIndent()
+        val responseCode = todoClient.createTodo(invalidTodo)
+        val todos = todoClient.getAllTodos()
+
+        assertEquals(400, responseCode)
+        assertEquals("[]", todos)
+    }
+
+    @Test
+    fun `Given an ivalid pagination when get with limit 0 and offset -1 then an error occurs`() {
+        todoClient.createNTodos(1)
+        val todos = todoClient.getNTodos(-1, 0)
+
+        assertEquals("Invalid query string", todos)
+    }
+
+    @Test
+    fun `Given zero todos when update a non-existent todo then an error 'Not Found' occurs`() {
+        val responseCode = todoClient.updateTodo(Todo(1, "Buy groceries and milk", true))
+
+        assertEquals(404, responseCode)
+    }
 }

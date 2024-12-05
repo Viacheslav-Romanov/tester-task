@@ -5,6 +5,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocketListener
 import okio.ByteString
+import java.lang.Thread.sleep
 import java.util.concurrent.TimeUnit
 
 object WebSocketClient: WebSocketListener() {
@@ -20,6 +21,7 @@ object WebSocketClient: WebSocketListener() {
 
       // Trigger shutdown of the dispatcher's executor so this process exits immediately.
       client.dispatcher.executorService.shutdown()
+      sleep(1000)
     }
 
     override fun onOpen(webSocket: okhttp3.WebSocket, response: Response) {
@@ -39,7 +41,11 @@ object WebSocketClient: WebSocketListener() {
     }
 
     override fun onFailure(webSocket: okhttp3.WebSocket, t: Throwable, response: Response?) {
-      t.printStackTrace()
+      if(t is java.io.EOFException) {
+        println("Connection has been closed by a server side")
+      } else {
+        t.printStackTrace()
+      }
     }
 
     fun start() {
