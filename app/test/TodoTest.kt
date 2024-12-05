@@ -1,4 +1,5 @@
 import org.junit.Test
+import ws.WebSocketClient
 import kotlin.test.assertEquals
 
 class TodoTest: BaseTest() {
@@ -22,6 +23,10 @@ class TodoTest: BaseTest() {
         [{"id":1,"text":"Test Todo 1","completed":false},{"id":2,"text":"Test Todo 2","completed":false},{"id":3,"text":"Test Todo 3","completed":true}]
         """.trim()
         assertEquals(expected, todos)
+
+        WebSocketClient.awaitAndAssert("""{"data":{"completed":false,"id":1,"text":"Test Todo 1"},"type":"new_todo"}""")
+        WebSocketClient.awaitAndAssert("""{"data":{"completed":false,"id":2,"text":"Test Todo 2"},"type":"new_todo"}""")
+        WebSocketClient.awaitAndAssert("""{"data":{"completed":true,"id":3,"text":"Test Todo 3"},"type":"new_todo"}""")
     }
 
     @Test

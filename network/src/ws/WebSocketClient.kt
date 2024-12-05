@@ -7,10 +7,12 @@ import okhttp3.Response
 import okhttp3.WebSocketListener
 import okio.ByteString
 import java.lang.Thread.sleep
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.TimeUnit
 
 object WebSocketClient: WebSocketListener() {
   private val wsUrl: String = "ws://${dotenv()["BASE_URL"]}/ws"
+  var entries: ConcurrentLinkedQueue<String> = ConcurrentLinkedQueue()
   private fun run() {
     val client = OkHttpClient.Builder()
         .readTimeout(0,  TimeUnit.MILLISECONDS)
@@ -30,6 +32,7 @@ object WebSocketClient: WebSocketListener() {
   }
 
   override fun onMessage(webSocket: okhttp3.WebSocket, text: String) {
+    entries.add(text)
     println("MESSAGE: $text")
   }
 
@@ -38,11 +41,13 @@ object WebSocketClient: WebSocketListener() {
   }
 
   override fun onClosing(webSocket: okhttp3.WebSocket, code: Int, reason: String) {
+    entries.clear()
     webSocket.close(1000, null)
     println("CLOSE: $code $reason")
   }
 
   override fun onFailure(webSocket: okhttp3.WebSocket, t: Throwable, response: Response?) {
+    entries.clear()
     if(t is java.io.EOFException) {
       println("Connection has been closed by a server side")
     } else {
@@ -52,5 +57,17 @@ object WebSocketClient: WebSocketListener() {
 
   fun start() {
     run()
+  }
+
+  fun awaitAndAssert(message: String) {
+    var contains = false
+    for (i in 1..5) {
+      contains = entries.contains(message)
+      if (contains) break
+      sleep(100)
+    }
+    assert(contains) {
+      "Message $message has not been arrived within the 500ms timeframe"
+    }
   }
 }
