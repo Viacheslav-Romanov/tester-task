@@ -70,4 +70,16 @@ object WebSocketClient: WebSocketListener() {
       "Message $message has not been arrived within the 500ms timeframe"
     }
   }
+
+  fun awaitAndAssertNotContains(message: String) {
+    var contains = true
+    for (i in 1..5) {
+      contains = entries.contains(message)
+      if (!contains) break
+      sleep(100)
+    }
+    assert(!contains) {
+      "Message $message has not to be in the receiving queue but It's somehow there"
+    }
+  }
 }

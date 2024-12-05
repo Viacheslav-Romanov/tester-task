@@ -77,6 +77,17 @@ class TodoClient {
         return response.code
     }
 
+    fun updateTodo(id: Int, todo: String): Int {
+        val body = todo.toRequestBody("application/json".toMediaType())
+        val request = Request.Builder()
+            .url("$baseUrl/$id")
+            .put(body)
+            .build()
+        val response = client.newCall(request).execute()
+        println("PUT: " + response.code)
+        return response.code
+    }
+
     fun deleteTodo(todo: Todo, withAuth: Boolean = true): Int {
         val request = Request.Builder()
             .url("$baseUrl/${todo.id}")
@@ -84,6 +95,17 @@ class TodoClient {
                 if (withAuth)
                     addHeader("Authorization", "Basic YWRtaW46YWRtaW4=")
             }
+            .delete()
+            .build()
+        val response = client.newCall(request).execute()
+        println("DELETE: " + response.code)
+        return response.code
+    }
+
+    fun deleteAllTodos(): Int {
+        val request = Request.Builder()
+            .url(baseUrl)
+            .addHeader("Authorization", "Basic YWRtaW46YWRtaW4=")
             .delete()
             .build()
         val response = client.newCall(request).execute()
