@@ -49,5 +49,5 @@ jobs:
               requests:
               - http://localhost:8080/todos
         EOF
-        bzt quick_test.yml
+        bzt quick_test.yml -report
         ./stop-docker.sh
