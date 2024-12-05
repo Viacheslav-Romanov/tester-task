@@ -32,3 +32,22 @@ jobs:
       with:
         name: Test report
         path: app/build/reports/tests/jvmTest
+
+    - name: Run performance tests
+      run: |
+        ./start-docker.sh
+        pip install bzt
+        cat > quick_test.yml << EOF
+          execution:
+          - concurrency: 10
+            ramp-up: 30s
+            hold-for: 1m
+            scenario: quick-test
+
+          scenarios:
+            quick-test:
+              requests:
+              - http://localhost:8080/todos
+        EOF
+        bzt quick_test.yml
+        ./stop-docker.sh
