@@ -7,18 +7,21 @@ class Docker {
     private var dockerProcessStart: Process? = null
 
     fun start() {
-        val pb = ProcessBuilder("/bin/sh", "-c", START_DOCKER_COMMAND)
-            .inheritIO()
-        dockerProcessStart = pb.start()
+        dockerProcessStart = startProcess(START_DOCKER_COMMAND)
         sleep(3000)
     }
 
     fun stop() {
-        val pb = ProcessBuilder("/bin/sh", "-c", STOP_DOCKER_COMMAND)
-            .inheritIO()
-        val dockerProcessStop = pb.start()
-        dockerProcessStop?.waitFor()
+        val dockerProcessStop = startProcess(STOP_DOCKER_COMMAND)
+        dockerProcessStop.waitFor()
         dockerProcessStart?.waitFor()
+    }
+
+    private fun startProcess(command: String): Process {
+        val pb = ProcessBuilder("/bin/sh", "-c", command)
+            .inheritIO()
+        val process = pb.start()
+        return process
     }
 
     companion object {

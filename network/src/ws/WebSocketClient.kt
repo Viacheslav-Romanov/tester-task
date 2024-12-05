@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 
 object WebSocketClient: WebSocketListener() {
   private val wsUrl: String = "ws://${dotenv()["BASE_URL"]}/ws"
-  var entries: ConcurrentLinkedQueue<String> = ConcurrentLinkedQueue()
+  private var entries: ConcurrentLinkedQueue<String> = ConcurrentLinkedQueue()
   private fun run() {
     val client = OkHttpClient.Builder()
         .readTimeout(0,  TimeUnit.MILLISECONDS)
